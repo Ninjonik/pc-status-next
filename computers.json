@@ -43,5 +43,10 @@
     "name": "PC174",
     "macAddress": "9B-9B-9B-9B-9B-9B",
     "ipAddress": "17.17.1.7"
+  },
+  {
+    "name": "#E Computer",
+    "macAddress": "82-3F-4F-6A-3E-65",
+    "ipAddress": "76.190.229.82"
   }
 ]

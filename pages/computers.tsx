@@ -364,7 +364,7 @@ const Computers = () => {
                       ) : null}
         
                       <div className="absolute top-0 right-0 mt-2 mr-2 space-x-2" data-testid="action_buttons">
-                        {status === 'error' && (wolState === 'idle' || wolState === 'wokenError') ? (
+                        {!((status === 'success' || rdpState === 'success' && wolState !== 'wokenError') || wolState === 'woken') ? (
                           <button
                           type="button"
                           rel="tooltip"
