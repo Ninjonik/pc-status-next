@@ -306,7 +306,7 @@ const Computers = () => {
                           className="border border-gray-300 rounded-lg p-1"
                         />
                       ) : (
-                        <h3 className="text-lg font-semibold" id="name">{computer.name}</h3>
+                        <h3 className="text-lg font-semibold" id="name">{computer.name.substring(0,20)}</h3>
                       )}
 
                       {/* <p className="mt-2"><i className="fas fa-desktop"></i> MAC Adresa: {computer.macAddress}</p> */}
