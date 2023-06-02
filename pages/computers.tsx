@@ -3,6 +3,7 @@ import computersData from '../computers.json';
 import { serverAddress, devMode } from '../config';
 import axios from 'axios';
 import Clock from "../components/Clock";
+import ComputerCard from '../components/ComputerCard';
 
 interface PingResult {
   ipAddress: string;
@@ -226,6 +227,7 @@ const Computers = () => {
 
   const handleEditClick = (ipAddress: string, name: string) => {
     setEditMode(true);
+    console.log(ipAddress);
     setEditedValues({ ipAddress, name });
   };
   
@@ -286,190 +288,24 @@ const Computers = () => {
           <div>
             <div className="container mx-auto px-4 flex justify-center items-center min-h-screen pt-8 pb-8">
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 w-full">
-                {computersData.map((computer, index) => {
-                  const pingResult = pingResults.find((result) => result.ipAddress === computer.ipAddress);
-                  const rdpStatus = rdpStatuses.find((status) => status.ipAddress === computer.ipAddress);
-                  const wolStatus = wolStatuses.find((status) => status.ipAddress === computer.ipAddress);
-        
-                  const status = pingResult ? pingResult.status : 'pending';
-                  const rdpState = rdpStatus ? rdpStatus.rdpStatus : 'pending';
-                  const wolState = wolStatus ? wolStatus.wolState : 'idle';
-        
-                  return (
-                    <div key={index} className="bg-gray-200 p-4 rounded-lg shadow-md relative" data-testid="computer-item">
-                      {editMode && editedValues?.ipAddress === computer.ipAddress ? (
-                        <input
-                          type="text"
-                          value={editedValues.name}
-                          name="name_input"
-                          onChange={(e) => setEditedValues((prevValues) => ({ ...prevValues, name: e.target.value, ipAddress: prevValues?.ipAddress || '' }))}
-                          className="border border-gray-300 rounded-lg p-1"
-                        />
-                      ) : (
-                        <h3 className="text-lg font-semibold" id="name">{computer.name.substring(0,20)}</h3>
-                      )}
-
-                      {/* <p className="mt-2"><i className="fas fa-desktop"></i> MAC Adresa: {computer.macAddress}</p> */}
-                      <p><i className="fas fa-globe"></i> {computer.ipAddress}</p>
-
-                      {/*
-                      (devMode) ? (
-                        <div>
-                          <p className={getStatusColorClass(status)}>Status {status}</p>
-                          <p className={getStatusColorClass(rdpState)}>RDP Status {rdpState}</p>
-                          <p className={getStatusColorClass(wolState)}>WOL Status {wolState}</p>
-                        </div>
-                      ) : null
-                      */}
-
-                      {(status == 'pending') ? (
-                        <div className="flex items-center" id="pinging">
-                          <div className="relative inline-block h-3 w-3 animate-spin rounded-full border-2 border-solid border-current border-r-transparent">
-                            <span className="absolute top-1/2 left-full transform -translate-y-1/2 -translate-x-1/2 h-px w-px overflow-hidden whitespace-nowrap border-0 p-0 clip-[rect(0,0,0,0)]">
-                              Pingovanie
-                            </span>
-                          </div>
-                          <span className="ml-2">Pingovanie</span>
-                        </div>
-                      )
-                      : (status === 'success' || rdpState === 'success' && wolState !== 'wokenError') || wolState === 'woken' ? (
-                        <div className="flex justify-between">
-                          <p className="text-green-600"><i className="fa-solid fa-plug"></i> Online</p>
-                          {rdpState === 'success' ? (
-                            <p className="text-green-600"><i className="fa-solid fa-circle-check"></i> RDP</p>
-                          ) : (
-                            <p className="text-red-600"><i className="fa-solid fa-circle-xmark"></i> RDP</p>
-                          )}
-                        </div>
-                      ) : status === 'error' ? (
-                        <div className='flex justify-between'>
-                          <p className="text-red-600"><i className="fa-solid fa-power-off"></i> Offline</p>
-                          <p className="text-red-600"><i className="fa-solid fa-circle-xmark"></i> RDP</p>
-                        </div>
-                      ) : null}
-
-                      {wolState === 'waking' ? (
-                        <div className="flex items-center" id="waking">
-                          <div className="relative inline-block h-3 w-3 animate-spin rounded-full border-2 border-solid border-yellow-500 border-r-transparent">
-                            <span className="absolute top-1/2 left-full transform -translate-y-1/2 -translate-x-1/2 h-px w-px overflow-hidden whitespace-nowrap border-0 p-0 clip-[rect(0,0,0,0)]">
-                              Zobúdzanie
-                            </span>
-                          </div>
-                          <span className="ml-2 text-yellow-500">Zobúdzanie</span>
-                        </div>  
-                      ) : wolState === 'woken' ? (
-                        <p className="text-green-500">Zobudený</p>
-                      ) : wolState === 'wokenError' ? (
-                        <p className="text-red-500">Počítač sa nepodarilo zobudiť</p>
-                      ) : null}
-        
-                      <div className="absolute top-0 right-0 mt-2 mr-2 space-x-2" data-testid="action_buttons">
-                        {!((status === 'success' || rdpState === 'success' && wolState !== 'wokenError') || wolState === 'woken') ? (
-                          <button
-                          type="button"
-                          rel="tooltip"
-                          className="btn btn-danger btn-round"
-                          name="wake"
-                          onClick={() => sendWoL(computer.macAddress)}
-                        >
-                          <i className="fa-regular fa-bell"></i>
-                        </button>
-                        ) : null}
-                        <button
-                          type="button"
-                          rel="tooltip"
-                          className="btn btn-info btn-round"
-                          name="refresh"
-                          onClick={() => {
-                            pingSelectedComputer(computer.ipAddress);
-                          }}
-                        >
-                          <i className="fa-solid fa-arrows-rotate"></i>
-                        </button>
-                        {editMode && editedValues?.ipAddress === computer.ipAddress ? (
-                          <button
-                          type="button"
-                          rel="tooltip"
-                          className="btn btn-secondary btn-round"
-                          name="save"
-                          onClick={() => handleSaveClick()}
-                        >
-                          <i className="fa-sharp fa-solid fa-save"></i>
-                        </button>
-
-                        ) : (         
-                        <button
-                        type="button"
-                        rel="tooltip"
-                        className="btn btn-secondary btn-round"
-                        name="edit"
-                        onClick={() => handleEditClick(computer.ipAddress, computer.name)}
-                        >
-                        <i className="fa-sharp fa-solid fa-pencil"></i>
-                        </button>
-                        )}
-                        <button
-                          type="button"
-                          rel="tooltip"
-                          className="btn btn-danger btn-round"
-                          name="remove"
-                          onClick={() => deleteComputer(computer.macAddress)}
-                        >
-                          <i className="fa-sharp fa-solid fa-trash"></i>
-                        </button>
-                      </div>
-                      { /*
-                      <div className="grid grid-cols-2 gap-4 mt-4" data-testid="status_buttons">
-                        {status === 'success' ? (
-                          <>
-                            <button className="bg-green-500 hover:bg-green-600 text-white font-semibold px-4 py-2 rounded" name="online" disabled>
-                            <i className="fa-solid fa-plug"></i> Online
-                            </button>
-                            {rdpState === 'success' ? (
-                              <button className="bg-green-500 hover:bg-green-600 text-white font-semibold px-4 py-2 rounded" name="rdp_success" disabled>
-                                <i className="fa-regular fa-circle-check"></i> RDP
-                              </button>
-                            ) : rdpState === 'error' ? (
-                              <button className="bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded" name="rdp_error" disabled>
-                                <i className="fa-regular fa-circle-xmark"></i> RDP
-                              </button>
-                            ) : null}
-                          </>
-                        ) : status === 'error' ? (
-                          <>
-                            <button className="bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded" name="offline" disabled>
-                            <i className="fa-solid fa-power-off"></i> Offline
-                            </button>
-                            {wolState === 'waking' ? (
-                              <div className="flex items-center" id="waking">
-                                <div className="relative inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-yellow-500 border-r-transparent">
-                                  <span className="absolute top-1/2 left-full transform -translate-y-1/2 -translate-x-1/2 h-px w-px overflow-hidden whitespace-nowrap border-0 p-0 clip-[rect(0,0,0,0)]">
-                                    Zobúdzanie
-                                  </span>
-                                </div>
-                                <span className="ml-2 text-yellow-500">Zobúdzanie</span>
-                              </div>  
-                            ) : wolState === 'woken' ? (
-                              <p className="text-green-500">Zobudený</p>
-                            ) : wolState === 'wokenError' ? (
-                              <p className="text-red-500">Počítač sa nepodarilo zobudiť</p>
-                            ) : null}
-                          </>
-                        ) : (
-                          <div className="flex items-center" id="pinging">
-                            <div className="relative inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent">
-                              <span className="absolute top-1/2 left-full transform -translate-y-1/2 -translate-x-1/2 h-px w-px overflow-hidden whitespace-nowrap border-0 p-0 clip-[rect(0,0,0,0)]">
-                                Pingovanie
-                              </span>
-                            </div>
-                            <span className="ml-2">Pingovanie</span>
-                          </div>
-                        )}
-                      </div>
-                        */}
-                    </div>
-                  );
-                })}
+              {computersData.map((computer, index) => (
+                  <ComputerCard
+                    key={index}
+                    cardKey={index}
+                    computer={computer}
+                    editMode={editMode}
+                    editedValues={editedValues}
+                    pingStatus={pingResults.find((result) => result.ipAddress === computer.ipAddress)?.status}
+                    rdpStatus={rdpStatuses.find((status) => status.ipAddress === computer.ipAddress)?.rdpStatus}
+                    wolState={wolStatuses.find((status) => status.ipAddress === computer.ipAddress)?.wolState}
+                    sendWol={() => sendWoL(computer.macAddress)}
+                    pingSelectedComputer={() => pingSelectedComputer(computer.ipAddress)}
+                    handleEditClick={() => handleEditClick(computer.ipAddress, computer.name)} // Pass the required arguments
+                    handleSaveClick={handleSaveClick} // Remove unnecessary arrow function
+                    setEditedValues={(values) => setEditedValues(values)} // Pass the required arguments
+                    deleteComputer={() => deleteComputer(computer.macAddress)} // Pass the required arguments
+                  />
+                ))}
               </div>
             </div>
           </div>

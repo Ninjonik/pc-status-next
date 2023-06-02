@@ -35,18 +35,13 @@
     "ipAddress": "10.2.1.22"
   },
   {
-    "name": "PC Test 49",
+    "name": "PC Test 50",
     "macAddress": "8E-7C-C8-39-79-D8",
     "ipAddress": "58.249.101.162"
   },
   {
-    "name": "PC174",
+    "name": "#E Computer",
     "macAddress": "9B-9B-9B-9B-9B-9B",
     "ipAddress": "17.17.1.7"
-  },
-  {
-    "name": "#E Computer",
-    "macAddress": "82-3F-4F-6A-3E-65",
-    "ipAddress": "76.190.229.82"
   }
 ]

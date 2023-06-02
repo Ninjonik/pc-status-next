@@ -1,13 +1,19 @@
-import Link from 'next/link'
-import Layout from '../components/Layout'
+import HelloWorld from '../components/HelloWorld'
+import Clock from '../components/Clock';
 
-const IndexPage = () => (
-  <Layout title="Home | Next.js + TypeScript Example">
-    <h1>Hello Next.js 👋</h1>
-    <p>
-      <Link href="/about">About</Link>
-    </p>
-  </Layout>
-)
+const IndexPage = () => {
+  return (
+    <div className="grid h-screen place-items-center">
+      <div>
+        <h1 className="text-3xl font-bold first-letter:underline">
+          <HelloWorld />
+        </h1>
+        <h2 className="font-light">
+          <Clock />
+        </h2>
+      </div>
+    </div>
+  );
+};
 
-export default IndexPage
+export default IndexPage;

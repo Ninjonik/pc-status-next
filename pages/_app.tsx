@@ -1,11 +1,8 @@
 import { AppProps } from 'next/app';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import Landing from '../components/landing';
-import Computers from '../components/computers';
-import AddComputer from '../components/addComputer';
 import Clock from '../components/Clock';
-import ParticleBG from '../components/Particle';
+import Footer from '../components/footer';
 import '../styles/index.css';
 import 'tailwindcss/tailwind.css';
 
@@ -50,6 +47,7 @@ const App = ({ Component, pageProps }: AppProps) => {
       </header>
       <div className="content">
         <Component {...pageProps} />
+        <Footer />
       </div>
     </div>
   );
