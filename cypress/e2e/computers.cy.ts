@@ -9,9 +9,18 @@ describe('Computers', () => {
   });
 
   it('deletes the last element in a grid', () => {
+    let lastElementText;
+  
     cy.get('[data-testid="computer-item"]').last().within(() => {
-      cy.get('[name="remove"]').click();
+      cy.get('[name="remove"]').invoke('text').then(text => {
+        lastElementText = text.trim();
+        cy.get('[name="remove"]').click();
+      });
     });
+  
+    cy.wait(2000);
+
+    cy.contains('[data-testid="computer-item"]', lastElementText).should('not.exist');
   });
 
   it('clicks on the edit button, changes the name, and checks if the name was changed - last element in a grid', () => {
@@ -27,19 +36,16 @@ describe('Computers', () => {
 
   it('should display RDP and Online/Offline statuses correctly', () => {
     cy.get('[data-testid="computer-item"]').each(($computer) => {
-      const delay = 2500; // Delay in milliseconds
+      const delay = 2500; 
       cy.wait(delay);
 
-      // Check if RDP status is displayed
       cy.wrap($computer).should('contain', 'RDP');
 
-      // Check if either "Online" or "Offline" status is displayed
       cy.wrap($computer).should(($computer) => {
         const text = $computer.text();
         expect(text.includes('Online') || text.includes('Offline')).to.be.true;
       });
 
-      // Check if only offline computers have the Bell Button
       cy.wrap($computer).then(($computer) => {
         const offline = $computer.text().includes('Offline');
 
